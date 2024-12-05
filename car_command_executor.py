@@ -29,7 +29,13 @@ class CarCommandExecutor:
         )
 
     def execute_command(self, command):
-        self.current_frame_commands.append(command)
+        """
+        공백으로 구분된 명령어들 처리
+        """
+        commands = command.split()
+
+        self.current_frame_commands.clear()
+        self.current_frame_commands.extend(commands)
 
         if self._is_engine_control_commands():
             return self._handle_engine_control()
