@@ -2,6 +2,14 @@ class EngineController:
     def __init__(self, car_controller):
         self.car_controller = car_controller
 
+    def handle_brake_command(self):
+        """브레이크 커멘드 처리"""
+        pass
+
+    def handle_simultaneous_commands(self, commands):
+        """동시 입력된 커맨드들 처리"""
+        pass
+
     def handle_engine_control(self) -> bool:
         """
         자동차의 엔진 상태를 전환하는 메서드
@@ -21,6 +29,9 @@ class EngineController:
         self.car_controller.toggle_engine()
         success(try_case)
         return True
+
+
+
 
 def success(try_case):
     print("\n[{} - 성공]".format(try_case))
