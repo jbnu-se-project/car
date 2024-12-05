@@ -20,21 +20,28 @@ class TestEngineStartController(unittest.TestCase):
         self.assertFalse(self.car.engine_on)
 
         # When: 엔진 버튼 신호만 보냄
-        self.engine_controller.handle_engine_control()
+        result = self.engine_controller.handle_engine_control()
 
         # Then: 시동이 걸리지 않아야 함
+        self.assertFalse(result)
         self.assertFalse(self.car.engine_on)
 
     def test_engine_start_with_sequential_input(self):
-        """브레이크 신호를 보내고 엔진 버튼을 순차적으로 눌렀을 때는 시동이 걸리지 않는다"""
+        """
+        브레이크 신호를 보내고 엔진 버튼을 순차적으로 눌렀을 때는 시동이 걸리지 않는다
+        ex)
+        BREAK
+        ENGINE_BTN
+        """
         # Given: 엔진이 꺼진 상태
         self.assertFalse(self.car.engine_on)
 
         # When: 브레이크 신호를 보내고 나서 엔진 버튼을 누름
         self.engine_controller.handle_brake_command()
-        self.engine_controller.handle_engine_control()
+        result = self.engine_controller.handle_engine_control()
 
         # Then: 시동이 걸리지 않아야 함
+        self.assertFalse(result)
         self.assertFalse(self.car.engine_on)
 
     def test_engine_start_with_break_and_engine_button(self):
@@ -47,9 +54,10 @@ class TestEngineStartController(unittest.TestCase):
         self.assertFalse(self.car.engine_on)
 
         # When: 브레이크와 엔진 버튼 신호가 동시에 들어옴
-        self.engine_controller.handle_simultaneous_commands(["BRAKE", "ENGINE_BTN"])
+        result = self.engine_controller.process_simultaneous_commands(["BRAKE", "ENGINE_BTN"])
 
         # Then: 시동이 걸려야함
+        self.assertTrue(result)
         self.assertTrue(self.car.engine_on)
 
 if __name__ == '__main__':
