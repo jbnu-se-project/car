@@ -9,12 +9,16 @@ from controller.trunk_controller import TrunkController
 class CarCommandExecutor:
     def __init__(self, car_controller):
         self.car_controller = car_controller
-        self.engin_controller = EngineController(car_controller)
-        self.door_lock_controller = DoorLockController(car_controller)
-        self.movement_controller = MovementController(car_controller, self.door_lock_controller)
-        self.trunk_controller = TrunkController(car_controller)
-        self.door_open_controller = OpenDoorController(car_controller)
-        self.door_closed_controller = ClosedDoorController(car_controller)
+        self._initialize_controllers()
+        self.current_frame_commands = []
+
+    def _initialize_controllers(self):
+        self.engin_controller = EngineController(self.car_controller)
+        self.door_lock_controller = DoorLockController(self.car_controller)
+        self.movement_controller = MovementController(self.car_controller, self.door_lock_controller)
+        self.trunk_controller = TrunkController(self.car_controller)
+        self.door_open_controller = OpenDoorController(self.car_controller)
+        self.door_closed_controller = ClosedDoorController(self.car_controller)
         self.sos_controller = SOSController(
             self.car_controller,
             self.movement_controller,
@@ -25,37 +29,59 @@ class CarCommandExecutor:
         )
 
     def execute_command(self, command):
+        self.current_frame_commands.append(command)
+
+        if self._is_engine_control_commands():
+            return self._handle_engine_control()
+        return self._handle_single_command(command)
+
+    def _is_engine_control_commands(self):
+        """현재 프레임의 명령어들이 엔진 제어와 관련되었는지 판단"""
+        command_set = set(self.current_frame_commands)
+        return command_set >= {"BRAKE", "ENGINE_BTN"}
+
+    def _handle_engine_control(self):
+        result = self.engin_controller.process_simultaneous_commands(self.current_frame_commands)
+        self.current_frame_commands.clear()
+        return result
+
+    def _handle_single_command(self, command):
+        result = False
+
         if command == "ENGINE_BTN":
-            return self.engin_controller.handle_engine_control()
+            result =  self.engin_controller.handle_engine_control()
         elif command == "ACCELERATE":
-            return self.movement_controller.handle_acceleration()
+            result = self.movement_controller.handle_acceleration()
         elif command == "BRAKE":
-            return self.movement_controller.handle_brake()
+            result = self.movement_controller.handle_brake()
         elif command == "LOCK":
-            return self.door_lock_controller.all_door_lock()
+            result =  self.door_lock_controller.all_door_lock()
         elif command == "UNLOCK":
-            return self.door_lock_controller.all_door_unlock()
+            result =  self.door_lock_controller.all_door_unlock()
         elif command == "LEFT_DOOR_LOCK":
-            return self.door_lock_controller.left_door_lock()
+            result =  self.door_lock_controller.left_door_lock()
         elif command == "LEFT_DOOR_UNLOCK":
-            return self.door_lock_controller.left_door_unlock()
+            result =  self.door_lock_controller.left_door_unlock()
         elif command == "RIGHT_DOOR_LOCK":
-            return self.door_lock_controller.right_door_lock()
+            result =  self.door_lock_controller.right_door_lock()
         elif command == "RIGHT_DOOR_UNLOCK":
-            return self.door_lock_controller.right_door_unlock()
+            result =  self.door_lock_controller.right_door_unlock()
         elif command == "LEFT_DOOR_OPEN":
-            return self.door_open_controller.handle_left_door_open_controller()
+            result =  self.door_open_controller.handle_left_door_open_controller()
         elif command == "LEFT_DOOR_CLOSE":
-            return self.door_closed_controller.handle_left_door_closed_controller()
+            result =  self.door_closed_controller.handle_left_door_closed_controller()
         elif command == "RIGHT_DOOR_OPEN":
-            return self.door_open_controller.handle_right_door_open_controller()
+            result =  self.door_open_controller.handle_right_door_open_controller()
         elif command == "RIGHT_DOOR_CLOSE":
-            return self.door_closed_controller.handle_right_door_closed_controller()
+            result =  self.door_closed_controller.handle_right_door_closed_controller()
         elif command == "TRUNK_OPEN":
-            return self.trunk_controller.handle_trunk_open_controller()
+            result =  self.trunk_controller.handle_trunk_open_controller()
         elif command == "TRUNK_CLOSE":
-            return self.trunk_controller.handle_trunk_closed_controller()
+            result =  self.trunk_controller.handle_trunk_closed_controller()
         elif command == "SOS":
-            return self.sos_controller.activate_sos()
+            result =  self.sos_controller.activate_sos()
         else:
             print("잘못된 입력입니다.")
+
+        self.current_frame_commands.clear()
+        return result
