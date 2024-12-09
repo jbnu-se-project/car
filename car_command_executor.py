@@ -33,7 +33,7 @@ class CarCommandExecutor:
         공백으로 구분된 명령어들 처리
         """
         commands = command.split()
-
+        
         self.current_frame_commands.clear()
         self.current_frame_commands.extend(commands)
 
@@ -47,11 +47,13 @@ class CarCommandExecutor:
         return command_set >= {"BRAKE", "ENGINE_BTN"}
 
     def _handle_engine_control(self):
+        """엔진제어 관련 명령어 처리"""
         result = self.engin_controller.process_simultaneous_commands(self.current_frame_commands)
         self.current_frame_commands.clear()
         return result
 
     def _handle_single_command(self, command):
+        """단일 명령어 처리"""
         result = False
 
         if command == "ENGINE_BTN":
