@@ -33,7 +33,7 @@ class CarCommandExecutor:
         공백으로 구분된 명령어들 처리
         """
         commands = command.split()
-
+        
         self.current_frame_commands.clear()
         self.current_frame_commands.extend(commands)
 

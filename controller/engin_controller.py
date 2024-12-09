@@ -52,12 +52,16 @@ class EngineController:
 
     def _check_valid_start_condition(self):
         """시동을 걸기 위한 유효한 조건 체크"""
-        # 명령어에 BRAKE와 ENGINE_BTN이 동시에 포함되어 있는지 확인
+        # 명령어에 BRAKE와 ENGINE_BTN만 있는지 확인
         required_commands = ["BRAKE", "ENGINE_BTN"]
         current_commands = self.current_frame_commands
+
         
-        # BRAKE와 ENGINE_BTN이 포함되었는지 확인
-        return (current_commands == required_commands) and len(self.current_frame_commands) == 2
+        if required_commands != current_commands:
+            print("유효하지 않은 입력입니다.")
+            return False
+        else:
+            return True
 
 
 def success(try_case):
