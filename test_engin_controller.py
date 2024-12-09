@@ -64,14 +64,15 @@ class TestEngineStartController(unittest.TestCase):
         """
         다양한 커맨드 조합으로 시동 동작 테스트.
         """
+
         test_cases = [
-            # 커맨드 조합, 예상 결과
-            (["BRAKE", "ENGINE_BTN", "ACCELERATE"], False),     # TC1-1: 3개 이상의 다중 명령어
-            (["ACCELERATE", "BRAKE", "ENGINE_BTN"], False),     # TC1-2: 3개 이상의 다중 명령어
-            (["BRAKE", "ACCELERATE", "BRAKE"], False),          # TC1-3: 3개 이상의 다중 명령어
-            (["UNLOCK", "BRAKE", "ENGINE_BTN"], False),         # TC1-4: 3개 이상의 다중 명령어
-            (["LEFT_DOOR_OPEN", "BRAKE", "ENGINE_BTN"], False), # TC1-5: 3개 이상의 다중 명령어
-            (["TRUNK_OPEN", "BRAKE", "ENGINE_BTN"], False),     # TC1-6: 3개 이상의 다중 명령어
+            # 커맨드 조합, 예상 결과                            # TC1: 3개 이상의 다중 명령어
+            (["BRAKE", "ENGINE_BTN", "ACCELERATE"], False),     # TC1-1
+            (["ACCELERATE", "BRAKE", "ENGINE_BTN"], False),     # TC1-2
+            (["BRAKE", "ACCELERATE", "BRAKE"], False),          # TC1-3
+            (["UNLOCK", "BRAKE", "ENGINE_BTN"], False),         # TC1-4
+            (["LEFT_DOOR_OPEN", "BRAKE", "ENGINE_BTN"], False), # TC1-5
+            (["TRUNK_OPEN", "BRAKE", "ENGINE_BTN"], False),     # TC1-6
             
             (["ENGINE_BTN", "BRAKE"], False),                   # 기본 조건
             (["BRAKE", "ENGINE_BTN"], True),                    # 기본 조건
@@ -92,6 +93,39 @@ class TestEngineStartController(unittest.TestCase):
                 # 엔진 상태 초기화
             if self.car.engine_on:
                 self.car_controller.toggle_engine()
+
+    def test_engine_start_with_various_commands(self):
+        """
+        다양한 커맨드 조합으로 시동 동작 테스트.
+        """
+        test_cases = [
+            # 커맨드 조합, 예상 결과 및 출력 메시지
+            (["BRAKE", "ENGINE_BTN", "INVALID_INPUT"], False, "유효하지 않은 입력입니다."),  # TC2-1
+            (["INVALID_INPUT", "BRAKE", "ENGINE_BTN"], False, "유효하지 않은 입력입니다."),  # TC2-2
+            (["BRAKE", "INVALID_INPUT", "ENGINE_BTN"], False, "유효하지 않은 입력입니다."),  # TC2-3
+
+            (["ENGINE_BTN", "BRAKE"], False, "유효하지 않은 입력입니다."),  # 기본 조건 (잘못된 순서)
+            (["BRAKE", "ENGINE_BTN"], True, ""),  # 기본 조건 (올바른 순서)
+        ]
+
+        for commands, expected, output in test_cases:
+            with self.subTest(commands=commands), patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+                # Given: 초기 상태
+                self.car_controller.current_frame_commands = commands
+                self.car.engine_on = False
+
+                # When: 커맨드 실행
+                result = self.engine_controller._check_valid_start_condition()
+                printed_output = mock_stdout.getvalue().strip()
+
+                # Then: 결과 확인
+                self.assertEqual(result, expected)
+                self.assertEqual(printed_output, output)
+
+                # 엔진 상태 확인 및 초기화
+                self.assertEqual(self.car.engine_on, expected)
+                if self.car.engine_on:
+                    self.car_controller.toggle_engine()
 
 if __name__ == '__main__':
     unittest.main()
