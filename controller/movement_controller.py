@@ -9,8 +9,10 @@ class MovementController:
     def auto_lock_by_speed(self):
         """속도 감응식 자동 문 잠금 처리"""
         if not self.car_controller.get_lock_status():
-            self.doorLock_controller.all_door_lock()
-            success("속도 감응식 자동 잠금")
+            if self.doorLock_controller.all_door_lock():
+                success("속도 감응식 자동 잠금")
+            else:
+                fail("속도 감응식 자동 잠금", "문이 열려있습니다")
 
     def handle_acceleration(self) -> bool:
         """
