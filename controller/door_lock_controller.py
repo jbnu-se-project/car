@@ -5,10 +5,13 @@ class DoorLockController:
     def door_open_status(self, try_case):
         if self.car_controller.get_left_door_status() == "OPEN" and self.car_controller.get_right_door_status() == "OPEN":
             fail(try_case, "모든 문이 열려있습니다")
+            return False
         elif self.car_controller.get_left_door_status() == "OPEN":
             fail(try_case, "왼쪽 문이 열려있습니다")
+            return False
         elif self.car_controller.get_right_door_status() == "OPEN":
             fail(try_case, "오른쪽 문이 열려있습니다")
+            return False
 
     def get_all_door_checking(self):
         return self.car_controller.get_left_door_status() == "CLOSED" and self.car_controller.get_right_door_status() == "CLOSED"
@@ -30,11 +33,13 @@ class DoorLockController:
         if self.get_all_door_checking():
             if self.car_controller.get_left_door_lock() == "LOCKED" and self.car_controller.get_right_door_lock() == "LOCKED":
                 fail(try_case, "이미 모든 문이 잠긴 상태입니다.")
+                return False
             else:
                 self.car_controller.lock_left_door()
                 self.car_controller.lock_right_door()
                 self.car_controller.lock_vehicle()
                 success(try_case)
+                return True
         else:
             self.door_open_status(try_case)
         self.vehicle_status_checking()
