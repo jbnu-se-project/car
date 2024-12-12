@@ -55,8 +55,7 @@ class EngineController:
         # 명령어에 BRAKE와 ENGINE_BTN만 있는지 확인
         required_commands = ["BRAKE", "ENGINE_BTN"]
         current_commands = self.current_frame_commands
-
-        
+     
         if required_commands != current_commands:
             print("유효하지 않은 입력입니다.")
             return False
@@ -65,7 +64,9 @@ class EngineController:
 
 
 def success(try_case):
+    "Case가 성공했음을 출력합니다."
     print("\n[{} - 성공]".format(try_case))
 
 def fail(try_case, fail_reason):
+    "Case가 실패했음을 출력합니다."
     print("\n[{} - 실패] : {}".format(try_case, fail_reason))
