@@ -8,11 +8,13 @@ class MovementController:
 
     def auto_lock_by_speed(self):
         """속도 감응식 자동 문 잠금 처리"""
+        try_case = "속도 감응식 자동 잠금"
+
         if not self.car_controller.get_lock_status():
             if self.doorLock_controller.all_door_lock():
-                success("속도 감응식 자동 잠금")
+                success(try_case)
             else:
-                fail("속도 감응식 자동 잠금", "문이 열려있습니다")
+                fail(try_case, "문이 열려있습니다")
 
     def handle_acceleration(self) -> bool:
         """
@@ -23,13 +25,22 @@ class MovementController:
 
         :return: 차량이 가속할 수 있다면 True , 아니라면 False .
         """
-        if self.car_controller.get_speed() < self.max_speed:
-            self.car_controller.accelerate()
-            if self.car_controller.get_speed() >= self.auto_lock_speed:
-                self.auto_lock_by_speed()
-            return True
-        fail("가속", "속도가 최대값에 도달하여 가속할 수 없습니다.")
-        return False
+        try_case = "가속"
+        
+        if not self.car_controller.get_engine_status():
+            fail(try_case, "엔진이 꺼져 있는 상태로 가속할 수 없습니다.")
+            return False
+        
+        if self.car_controller.get_speed() >= self.max_speed:
+            fail("가속", "속도가 최대값에 도달하여 가속할 수 없습니다.")
+            return False
+        
+        self.car_controller.accelerate()
+
+        if self.car_controller.get_speed() >= self.auto_lock_speed:
+            self.auto_lock_by_speed()
+
+        return True
 
     def handle_brake(self) -> bool:
         """
@@ -39,10 +50,13 @@ class MovementController:
 
         :return: 차량이 브레이크할 수 있다면 True, 아니라면 False
         """
+        try_case = "브레이크"
+
         if self.car_controller.get_speed() > self.min_speed:
             self.car_controller.brake()
             return True
-        fail("브레이크", "차량이 정차 중임")
+            
+        fail(try_case, "차량이 정차 중임")
         return False
 
 def success(try_case):
