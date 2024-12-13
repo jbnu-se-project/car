@@ -53,8 +53,9 @@ class TrunkController:
 
 
 def success(try_case):
+    "Case가 성공했음을 출력합니다."
     print("\n[{} - 성공]".format(try_case))
 
-
 def fail(try_case, fail_reason):
+    "Case가 실패했음을 출력합니다."
     print("\n[{} - 실패] : {}".format(try_case, fail_reason))

@@ -17,7 +17,7 @@ class TestCarCommandExecutor(unittest.TestCase):
         # Given: 엔진이 꺼진 상태
         self.assertFalse(self.car.engine_on)
 
-        # When: 공백으로 구분된 연러 명령어 실행
+        # When: 공백으로 구분된 여러 명령어 실행
         result = self.car_command_executor.execute_command("BRAKE ENGINE_BTN")
 
         # Then: BRAKE와 ENGINE_BTN 명령어 별도로 인식

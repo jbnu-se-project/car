@@ -33,4 +33,5 @@ class SOSController:
         success(try_case)
 
 def success(try_case):
+    "Case가 성공했음을 출력합니다."
     print("\n[{} - 성공]".format(try_case))
