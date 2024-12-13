@@ -63,17 +63,17 @@ class CarCommandExecutor:
         elif command == "BRAKE":
             result = self.movement_controller.handle_brake()
         elif command == "LOCK":
-            result =  self.door_lock_controller.all_door_lock()
+            result =  self.door_lock_controller.handle_all_door_lock()
         elif command == "UNLOCK":
-            result =  self.door_lock_controller.all_door_unlock()
+            result =  self.door_lock_controller.handle_all_door_unlock()
         elif command == "LEFT_DOOR_LOCK":
-            result =  self.door_lock_controller.left_door_lock()
+            result =  self.door_lock_controller.handle_left_door_lock()
         elif command == "LEFT_DOOR_UNLOCK":
-            result =  self.door_lock_controller.left_door_unlock()
+            result =  self.door_lock_controller.handle_left_door_unlock()
         elif command == "RIGHT_DOOR_LOCK":
-            result =  self.door_lock_controller.right_door_lock()
+            result =  self.door_lock_controller.handle_right_door_lock()
         elif command == "RIGHT_DOOR_UNLOCK":
-            result =  self.door_lock_controller.right_door_unlock()
+            result =  self.door_lock_controller.handle_right_door_unlock()
         elif command == "LEFT_DOOR_OPEN":
             result =  self.door_open_controller.handle_left_door_open_controller()
         elif command == "LEFT_DOOR_CLOSE":
